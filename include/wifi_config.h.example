@@ -1,0 +1,2 @@
+static const char SSID[32] = "SSID";
+static const char PASS[64] = "PASS";

@@ -1,0 +1,11 @@
+# eclipse
+.cproject
+.project
+
+# binaries
+build
+firmware
+
+# user dependent
+include/wifi_config.h
+local.mk
