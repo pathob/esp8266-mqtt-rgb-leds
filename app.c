@@ -67,6 +67,7 @@ void sys_init_done_cb()
 
     MQTT_Connect(&mqttClient);
     WS2812_init();
+    WS2812_set_length(4);
 
     blinky();
     // blinky();
@@ -229,6 +230,10 @@ void httpd_conn_cb(
 
 void blinky()
 {
-    uint8 array[] = {0, 0, 255};
-    WS2812_write(array, 3);
+    WS2812_set_led(0, WS2812_RED);
+    WS2812_set_led(1, WS2812_GREEN);
+    WS2812_set_led(2, WS2812_BLUE);
+    WS2812_set_led(3, WS2812_WHITE);
+
+    WS2812_update();
 }

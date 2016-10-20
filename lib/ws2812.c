@@ -1,5 +1,8 @@
 #include "lib/ws2812.h"
 
+static uint16_t WS2812_length;
+static uint8_t* WS2812_buffer;
+
 void WS2812_init()
 {
     // Configure UART1
@@ -22,7 +25,34 @@ void WS2812_init()
     PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_U1TXD_BK);
 }
 
-void WS2812_write(const uint8 *buffer, uint8 length)
+void WS2812_set_length(
+        uint16_t len)
+{
+	if (WS2812_buffer) {
+		os_free(WS2812_buffer);
+	}
+
+    if (WS2812_buffer = (uint8_t *)os_zalloc(len*3)) {
+        WS2812_length = len;
+    } else {
+        WS2812_length = 0;
+    }
+}
+
+void WS2812_set_led(
+        uint16_t pos,
+        WS2812_color_t color)
+{
+    uint8_t led[3] = { color.g, color.r, color.b };
+    os_memcpy(&WS2812_buffer[pos*3], led, sizeof(led));
+}
+
+void WS2812_update()
+{
+    WS2812_write(WS2812_buffer, WS2812_length*3);
+}
+
+void WS2812_write(const uint8 *buffer, uint16 length)
 {
     // Data are sent LSB first, with a start bit at 0, an end bit at 1 and all inverted
     // 0b00110111 => 110111 => [0]111011[1] => 10001000 => 00

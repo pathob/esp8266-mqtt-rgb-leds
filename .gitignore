@@ -8,4 +8,5 @@ firmware
 
 # user dependent
 include/wifi_config.h
+include/mqtt_config.h
 local.mk
