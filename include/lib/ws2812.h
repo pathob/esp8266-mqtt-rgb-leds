@@ -32,10 +32,15 @@ typedef struct {
     uint8_t b;
 } WS2812_color_t;
 
+#define WS2812_OFF       (WS2812_color_t) {   0,   0,   0 }
+#define WS2812_ON        (WS2812_color_t) { 255, 255, 255 }
+
 #define WS2812_RED       (WS2812_color_t) {  10,   0,   0 }
 #define WS2812_GREEN     (WS2812_color_t) {   0,  10,   0 }
 #define WS2812_BLUE      (WS2812_color_t) {   0,   0,  10 }
 #define WS2812_WHITE     (WS2812_color_t) {  10,  10,  10 }
+#define WS2812_SUNSET    (ES2812_color_t) {  45; 121;  13 }
+
 
 void WS2812_init();
 
@@ -47,6 +52,9 @@ void WS2812_set_led(
         WS2812_color_t color);
 
 void WS2812_update();
+
+void WS2812_update_leds(
+        WS2812_color_t color);
 
 void WS2812_write(
         const uint8 *buffer,

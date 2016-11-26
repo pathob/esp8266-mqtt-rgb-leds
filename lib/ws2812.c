@@ -52,6 +52,19 @@ void WS2812_update()
     WS2812_write(WS2812_buffer, WS2812_length*3);
 }
 
+void WS2812_update_leds(
+        WS2812_color_t color)
+{
+    uint8_t i;
+
+    for (i = 0; i < WS2812_length; i++) {
+        uint8_t led[3] = { color.g, color.r, color.b };
+        os_memcpy(&WS2812_buffer[i*3], led, sizeof(led));
+    }
+
+    WS2812_update();
+}
+
 void WS2812_write(const uint8 *buffer, uint16 length)
 {
     // Data are sent LSB first, with a start bit at 0, an end bit at 1 and all inverted

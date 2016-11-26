@@ -7,7 +7,7 @@
 #ifndef LOCAL_CONFIG_AVAILABLE
 #error Please copy user_config.sample.h to user_config.local.h and modify your configurations
 #else
-#include "user_config.local.h"
+#include "mqtt_config.h"
 #endif
 
 #endif
