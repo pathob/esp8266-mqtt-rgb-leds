@@ -6,7 +6,10 @@
 #include "osapi.h"
 #include "mem.h"
 
+#include "json/jsonparse.h"
+
 #include "driver/uart.h"
+
 #include "lib/httplib.h"
 #include "lib/ws2812.h"
 #include "lib/mqtt/mqtt.h"
@@ -163,12 +166,8 @@ static void MQTT_data_cb(
 
     if (strcmp(topicBuf, cmdtopic) == 0) {
         if (strcmp(dataBuf, MQTT_LIGHT_STATE_ON) == 0) {
-            os_sprintf(topicRet, "%s%s", devicename, MQTT_LIGHT_STATE_TOPIC);
-            MQTT_Publish(client, topicRet, MQTT_LIGHT_STATE_ON, os_strlen(MQTT_LIGHT_STATE_ON), 0, 0);
             state = 1;
         } else { // if (strcmp(topicBuf, MQTT_LIGHT_STATE_OFF) == 0) {
-            os_sprintf(topicRet, "%s%s", devicename, MQTT_LIGHT_STATE_TOPIC);
-            MQTT_Publish(client, topicRet, MQTT_LIGHT_STATE_OFF, os_strlen(MQTT_LIGHT_STATE_OFF), 0, 0);
             state = 0;
         }
     } else if (strcmp(topicBuf, brightnesstopic) == 0) {
@@ -183,11 +182,6 @@ static void MQTT_data_cb(
         }
 
         brightness = b;
-        os_sprintf(topicRet, "%s%s", devicename, MQTT_LIGHT_BRIGHTNESS_STATE_TOPIC);
-        os_sprintf(dataRet, "%u", brightness);
-        MQTT_Publish(client, topicRet, dataRet, os_strlen(dataRet), 0, 0);
-
-        os_printf("brightness: %s\n", dataRet);
     } else if (strcmp(topicBuf, rgbtopic) == 0) {
         uint8_t i = 0;
         uint8_t col[3] = { 0, 0, 0 };
@@ -202,16 +196,22 @@ static void MQTT_data_cb(
             i++;
         }
 
-        if (1) {
-            rgb[0] = col[0];
-            rgb[1] = col[1];
-            rgb[2] = col[2];
-
-            os_sprintf(topicRet, "%s%s", devicename, MQTT_LIGHT_RGB_STATE_TOPIC);
-            os_sprintf(dataRet, "%u,%u,%u", rgb[0], rgb[1], rgb[2]);
-            MQTT_Publish(client, topicRet, dataRet, os_strlen(dataRet), 0, 0);
-        }
+        rgb[0] = col[0];
+        rgb[1] = col[1];
+        rgb[2] = col[2];
     }
+
+	const char* statusRet = state ? MQTT_LIGHT_STATE_ON : MQTT_LIGHT_STATE_OFF;
+    os_sprintf(topicRet, "%s%s", devicename, MQTT_LIGHT_STATE_TOPIC);
+    MQTT_Publish(client, topicRet, statusRet, os_strlen(statusRet), 0, 0);
+
+    os_sprintf(topicRet, "%s%s", devicename, MQTT_LIGHT_BRIGHTNESS_STATE_TOPIC);
+    os_sprintf(dataRet, "%u", brightness);
+    MQTT_Publish(client, topicRet, dataRet, os_strlen(dataRet), 0, 0);
+
+    os_sprintf(topicRet, "%s%s", devicename, MQTT_LIGHT_RGB_STATE_TOPIC);
+    os_sprintf(dataRet, "%u,%u,%u", rgb[0], rgb[1], rgb[2]);
+    MQTT_Publish(client, topicRet, dataRet, os_strlen(dataRet), 0, 0);
 
     WS2812_color_t color = {
             (uint8_t) rgb[0] * brightness / 255 * state,
